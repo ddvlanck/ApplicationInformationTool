@@ -12,7 +12,7 @@ import org.json.simple.JSONObject;
  *
  * @author Dwight
  */
-public class IFileCreator {
+public class FileCreator {
     
     
     public File createFile(JSONObject[] data){
