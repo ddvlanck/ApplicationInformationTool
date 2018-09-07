@@ -5,6 +5,7 @@
  */
 package information;
 
+import java.util.Map;
 import org.json.simple.JSONObject;
 
 /**
@@ -13,6 +14,6 @@ import org.json.simple.JSONObject;
  */
 public interface IData {
     
-    public JSONObject getData();
+    public Map<String, String> getData();
     
 }

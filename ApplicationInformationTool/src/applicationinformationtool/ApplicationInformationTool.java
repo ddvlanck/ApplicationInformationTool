@@ -5,6 +5,8 @@
  */
 package applicationinformationtool;
 
+import authentication.Authenticator;
+import file.FileCreator;
 import information.SystemData;
 import information.UserData;
 import org.json.simple.JSONObject;
@@ -23,13 +25,13 @@ public class ApplicationInformationTool {
         UserData userdata = new UserData();
         //ApplicationData appdata = new ApplicationData("file.json");
         
-        JSONObject sys = sysdata.getData();
-        JSONObject user = userdata.getData();
         //JSONObject app = appdata.getData();
         
-        System.out.println("SystemData: " + sys);
-        System.out.println("UserData: " + user);
+        //System.out.println("SystemData: " + sys);
+        //System.out.println("UserData: " + user);
         //System.out.println("AppData: " + app);
+        FileCreator fs = new FileCreator();
+        fs.createFile();
     }
     
 }

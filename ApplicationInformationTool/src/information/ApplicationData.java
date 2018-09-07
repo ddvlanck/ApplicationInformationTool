@@ -8,6 +8,8 @@ package information;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import org.json.simple.JSONObject;
 
 /**
@@ -39,10 +41,10 @@ public class ApplicationData implements IData {
     }
 
     @Override
-    public JSONObject getData() {
-        JSONObject appData = new JSONObject();
-        appData.put("applicationdata", this.fileContent);
-        return appData;
+    public Map<String, String> getData() {
+        Map<String, String> data = new HashMap<>();
+        data.put("applcationdata", this.fileContent);
+        return data;
     }
 
 }
