@@ -21,17 +21,9 @@ public class ApplicationInformationTool {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        SystemData sysdata = new SystemData();
         UserData userdata = new UserData();
-        //ApplicationData appdata = new ApplicationData("file.json");
-        
-        //JSONObject app = appdata.getData();
-        
-        //System.out.println("SystemData: " + sys);
-        //System.out.println("UserData: " + user);
-        //System.out.println("AppData: " + app);
-        FileCreator fs = new FileCreator();
-        fs.createFile();
+        Authenticator auth = new Authenticator(userdata);
+        auth.authenticate();
     }
     
 }

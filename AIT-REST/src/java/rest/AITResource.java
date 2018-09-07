@@ -39,30 +39,20 @@ public class AITResource {
      */
     @POST
     @Path("authentication")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_JSON)
     public String authenticate(String content) {
         //TODO return proper representation object
         System.out.println(content);
-        return "OK";
+        return "POST";
     }
     
-    @GET
+    @POST
     @Path("data")
-    @Produces(MediaType.APPLICATION_JSON)
-    public String sendData() {
-        //TODO return proper representation object
-        return "OK";
-    }
-    
-    
-
-    /**
-     * PUT method for updating or creating an instance of AITResource
-     * @param content representation for the resource
-     */
-    @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    public void putJson(String content) {
+    public void sendData(String content) {
+        //TODO return proper representation object
+        System.out.println("GET SUCCEED");
     }
+    
 }
