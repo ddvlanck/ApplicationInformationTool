@@ -5,6 +5,9 @@
  */
 package applicationinformationtool;
 
+import information.UserData;
+import org.json.simple.JSONObject;
+
 /**
  *
  * @author dwigh
@@ -16,6 +19,7 @@ public class ApplicationInformationTool {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        UserData data = new UserData();
     }
     
 }
