@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package file;
+package data;
 
 import information.ApplicationData;
 import information.SystemData;
@@ -20,9 +20,9 @@ import org.json.simple.JSONObject;
  *
  * @author Dwight
  */
-public class FileCreator {
+public class DataCreator {
 
-    public File createFile() {
+    public JSONObject createDataObject() {
         UserData user = new UserData();
         SystemData sys = new SystemData();
         //ApplicationData app = new ApplicationData("file.json");
@@ -45,17 +45,10 @@ public class FileCreator {
         for (Map.Entry<String, String> entry : sysData.entrySet()) {
             result.put(entry.getKey(), entry.getValue());
         }
-        //TODO : appdata
         
-        File file = new File(domain + "-" + mac + "-" + username + "-" + ts);
-        try {
-            FileWriter fw = new FileWriter(file);
-            fw.write(result.toJSONString());
-            fw.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        //  TODO : appdata       
+        
 
-        return file;
+        return result;
     }
 }

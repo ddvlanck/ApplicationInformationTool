@@ -6,7 +6,7 @@
 package applicationinformationtool;
 
 import authentication.Authenticator;
-import file.FileCreator;
+import data.DataCreator;
 import information.SystemData;
 import information.UserData;
 import org.json.simple.JSONObject;

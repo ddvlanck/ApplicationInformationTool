@@ -5,15 +5,18 @@
  */
 package rest;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PUT;
 import javax.ws.rs.core.MediaType;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 /**
  * REST Web Service
@@ -39,20 +42,39 @@ public class AITResource {
      */
     @POST
     @Path("authentication")
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public String authenticate(String content) {
-        //TODO return proper representation object
-        System.out.println(content);
-        return "POST";
+        try {
+            JSONObject data = (JSONObject) new JSONParser().parse(content);
+            String username = data.get("user.name").toString();
+            String userdomain = data.get("user.domain").toString();
+            
+            //  TODO
+            //  check database in Azure to see if the values are present.
+            //  if so, send back the authentication key
+            
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+        return "";
     }
     
     @POST
     @Path("data")
     @Consumes(MediaType.APPLICATION_JSON)
     public void sendData(String content) {
-        //TODO return proper representation object
-        System.out.println("GET SUCCEED");
+        
+        //Example to create JSON file
+        
+        /*File file = new File(domain + "-" + mac + "-" + username + "-" + ts);
+        try {
+            FileWriter fw = new FileWriter(file);
+            fw.write(result.toJSONString());
+            fw.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
     }
     
 }

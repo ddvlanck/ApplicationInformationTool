@@ -5,9 +5,11 @@
  */
 package authentication;
 
+import data.DataCreator;
 import information.UserData;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -26,8 +28,11 @@ import org.json.simple.JSONObject;
  */
 public class Authenticator {
 
-    private static final String URL = "http://localhost:8080/AIT-REST/ait/client/authentication";
+    private static final String authenticationURL = "http://localhost:8080/AIT-REST/ait/client/authentication";
+    private static final String dataURL = "http://localhost:8080/AIT-REST/ait/client/data";
     private final UserData user;
+    
+    private String AUTHENTICATION_KEY;
 
     public Authenticator(UserData user) {
         this.user = user;
@@ -41,7 +46,7 @@ public class Authenticator {
                 body.put(entry.getKey(), entry.getValue());
             }
 
-            URL url = new URL(URL);
+            URL url = new URL(authenticationURL);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(true);
             conn.setRequestMethod("POST");
@@ -55,8 +60,13 @@ public class Authenticator {
 
             conn.disconnect();
 
-            //TODO read result from server
-            //https://alvinalexander.com/blog/post/java/how-open-url-read-contents-httpurl-connection-java
+            //  TODO
+            //  if an authentication key was received from the server, send more data with the authentication key
+            //  to new URL : 'http://localhost:8080/AIT-REST/ait/client/data
+            if(!this.AUTHENTICATION_KEY.equals("")){
+                DataCreator fc = new DataCreator();
+                JSONObject data = fc.createDataObject();
+            }
             
         } catch (MalformedURLException me) {
             Logger.getLogger(Authenticator.class.getName()).log(Level.SEVERE, null, me);
