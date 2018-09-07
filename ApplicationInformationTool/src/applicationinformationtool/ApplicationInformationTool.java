@@ -5,6 +5,12 @@
  */
 package applicationinformationtool;
 
+import information.ApplicationData;
+import information.SystemData;
+import information.UserData;
+import java.util.Map;
+import org.json.simple.JSONObject;
+
 /**
  *
  * @author dwigh
@@ -15,7 +21,17 @@ public class ApplicationInformationTool {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        SystemData sysdata = new SystemData();
+        UserData userdata = new UserData();
+        //ApplicationData appdata = new ApplicationData("file.json");
+        
+        JSONObject sys = sysdata.getData();
+        //JSONObject user = userdata.getData();
+        //JSONObject app = appdata.getData();
+        
+        System.out.println("SystemData: " + sys);
+        //System.out.println("UserData: " + user);
+        //System.out.println("SystemData: " + sys);
     }
     
 }
