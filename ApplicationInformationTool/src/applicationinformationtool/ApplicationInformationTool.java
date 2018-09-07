@@ -5,10 +5,14 @@
  */
 package applicationinformationtool;
 
+<<<<<<< HEAD
 import information.ApplicationData;
 import information.SystemData;
 import information.UserData;
 import java.util.Map;
+=======
+import information.UserData;
+>>>>>>> ca9fba1a43777b735173f999af2099f8f493f2f4
 import org.json.simple.JSONObject;
 
 /**
