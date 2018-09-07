@@ -5,14 +5,8 @@
  */
 package applicationinformationtool;
 
-<<<<<<< HEAD
-import information.ApplicationData;
 import information.SystemData;
 import information.UserData;
-import java.util.Map;
-=======
-import information.UserData;
->>>>>>> ca9fba1a43777b735173f999af2099f8f493f2f4
 import org.json.simple.JSONObject;
 
 /**
@@ -30,12 +24,12 @@ public class ApplicationInformationTool {
         //ApplicationData appdata = new ApplicationData("file.json");
         
         JSONObject sys = sysdata.getData();
-        //JSONObject user = userdata.getData();
+        JSONObject user = userdata.getData();
         //JSONObject app = appdata.getData();
         
         System.out.println("SystemData: " + sys);
-        //System.out.println("UserData: " + user);
-        //System.out.println("SystemData: " + sys);
+        System.out.println("UserData: " + user);
+        //System.out.println("AppData: " + app);
     }
     
 }
