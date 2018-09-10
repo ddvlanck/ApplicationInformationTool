@@ -4,14 +4,12 @@
  * and open the template in the editor.
  */
 package rest;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import azure.Connector;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
@@ -34,6 +32,16 @@ public class AITResource {
      */
     public AITResource() {
     }
+    
+    @GET
+    @Path("test")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String testJSON(){
+        Connector con = new Connector();
+        con.getConnection();
+        System.out.println("Arne");
+        return "Arne is bere goed";
+    }
 
     /**
      * Retrieves representation of an instance of rest.AITResource
@@ -42,7 +50,7 @@ public class AITResource {
      */
     @POST
     @Path("authentication")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_JSON)
     public String authenticate(String content) {
         try {
@@ -57,15 +65,19 @@ public class AITResource {
         } catch(Exception e){
             e.printStackTrace();
         }
-        return "";
+        return "OK";
     }
     
     @POST
     @Path("data")
     @Consumes(MediaType.APPLICATION_JSON)
     public void sendData(String content) {
+        System.out.println(content);
         
-        //Example to create JSON file
+        //  TODO :
+        //  Create file from content and send it to Azure Data Lake
+        
+        //Example to create JSON file"
         
         /*File file = new File(domain + "-" + mac + "-" + username + "-" + ts);
         try {

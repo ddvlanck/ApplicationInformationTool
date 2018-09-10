@@ -30,14 +30,6 @@ public class DataCreator {
         Map<String, String> userData = user.getData();
         Map<String, String> sysData = sys.getData();
 
-        String domain = userData.get("user.domain");
-        String mac = sysData.get("mac.address");
-        String username = userData.get("user.name");
-
-        Date date = new Date();
-        long time = date.getTime();
-        Timestamp ts = new Timestamp(time);
-
         JSONObject result = new JSONObject();
         for (Map.Entry<String, String> entry : userData.entrySet()) {
             result.put(entry.getKey(), entry.getValue());
