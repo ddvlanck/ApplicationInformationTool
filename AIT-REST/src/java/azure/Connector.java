@@ -18,7 +18,7 @@ public class Connector {
 
     private static String HOSTNAME = "internsserver.database.windows.net";
     private static String DB_NAME = "DB_Interns";
-    private static String LOGIN = "cps01@savacocps01.onmicrosoft.com";
+    private static String LOGIN = "cps01";
     private static String PASSWORD = "i&xAVaJ6.";
 
     public Connector() {
