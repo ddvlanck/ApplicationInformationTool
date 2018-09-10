@@ -22,7 +22,8 @@ public class ApplicationInformationTool {
      */
     public static void main(String[] args) {
         UserData userdata = new UserData();
-        Authenticator auth = new Authenticator(userdata);
+        SystemData sys = new SystemData();
+        Authenticator auth = new Authenticator(userdata, sys);
         auth.authenticate();
     }
     

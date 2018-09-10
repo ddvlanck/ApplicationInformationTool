@@ -21,30 +21,36 @@ import org.json.simple.JSONObject;
  * @author dwigh
  */
 public class UserData implements IData {
-    
+
     private static final String USERNAME = "user.name";
-    
-    public UserData() {}
+
+    public UserData() {
+    }
 
     @Override
     public Map<String, String> getData() {
         Map<String, String> data = new HashMap<>();
-        
-        if(!System.getProperty(USERNAME).equals("")){
+
+        if (!System.getProperty(USERNAME).equals("")) {
             data.put("user.name", System.getProperty(USERNAME));
         }
-        
-        String hostname;
+
+        String hostname = this.getUserDomain();
+        if (!hostname.equals("")) {
+            data.put("user.domain", hostname);
+        }
+
+        return data;
+    }
+
+    public String getUserDomain() {
+        String hostname = null;
         try {
             hostname = InetAddress.getLocalHost().getCanonicalHostName();
-            if(!hostname.equals("")){
-                data.put("user.domain", hostname);
-            }
         } catch (UnknownHostException ex) {
             Logger.getLogger(UserData.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        return data;
+        return hostname;
     }
-    
+
 }

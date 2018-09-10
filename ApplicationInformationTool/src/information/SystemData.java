@@ -33,6 +33,24 @@ public class SystemData implements IData {
         com.sun.management.OperatingSystemMXBean os = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
         long physicalMemorySize = os.getTotalPhysicalMemorySize();
         
+        
+
+
+        data.put("os.name", System.getProperty("os.name"));
+        data.put("os.version", System.getProperty("os.version"));
+        data.put("java.version", System.getProperty("java.version"));
+        data.put("os.arch", System.getProperty("os.arch"));
+        data.put("processors.available", Integer.toString(rt.availableProcessors()));
+        data.put("memory.size", Long.toString(memorySize));
+        data.put("memory.max", Long.toString(maxMemory));
+        data.put("memory.physical", Long.toString(physicalMemorySize));
+        data.put("disk.size", Long.toString(diskSize));
+        data.put("mac.address", this.getMACAddress());
+
+        return data;
+    }
+    
+    public String getMACAddress(){
         StringBuilder address = new StringBuilder();
         try {
             InetAddress ip = InetAddress.getLocalHost();
@@ -45,20 +63,7 @@ public class SystemData implements IData {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
-        data.put("os.name", System.getProperty("os.name"));
-        data.put("os.version", System.getProperty("os.version"));
-        data.put("java.version", System.getProperty("java.version"));
-        data.put("os.arch", System.getProperty("os.arch"));
-        data.put("processors.available", Integer.toString(rt.availableProcessors()));
-        data.put("memory.size", Long.toString(memorySize));
-        data.put("memory.max", Long.toString(maxMemory));
-        data.put("memory.physical", Long.toString(physicalMemorySize));
-        data.put("disk.size", Long.toString(diskSize));
-        data.put("mac.address", address.toString());
-
-        return data;
+        return address.toString();
     }
 
 }

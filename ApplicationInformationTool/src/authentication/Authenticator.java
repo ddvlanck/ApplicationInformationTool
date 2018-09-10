@@ -6,6 +6,7 @@
 package authentication;
 
 import data.DataCreator;
+import information.SystemData;
 import information.UserData;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -31,20 +32,20 @@ public class Authenticator {
     private static final String authenticationURL = "http://localhost:8080/AIT-REST/ait/client/authentication";
     private static final String dataURL = "http://localhost:8080/AIT-REST/ait/client/data";
     private final UserData user;
+    private final SystemData sys;
 
     private String AUTHENTICATION_KEY;
 
-    public Authenticator(UserData user) {
+    public Authenticator(UserData user, SystemData sys) {
         this.user = user;
+        this.sys = sys;
     }
 
     public void authenticate() {
-        Map<String, String> basicData = user.getData();
         try {
             JSONObject body = new JSONObject();
-            for (Map.Entry<String, String> entry : basicData.entrySet()) {
-                body.put(entry.getKey(), entry.getValue());
-            }
+            body.put("user.domain", user.getUserDomain());
+            body.put("mac.address", sys.getMACAddress());
 
             URL url = new URL(authenticationURL);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();

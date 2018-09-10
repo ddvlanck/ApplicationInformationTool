@@ -4,7 +4,13 @@
  * and open the template in the editor.
  */
 package rest;
+
 import azure.Connector;
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Produces;
@@ -32,53 +38,89 @@ public class AITResource {
      */
     public AITResource() {
     }
-    
-    @GET
-    @Path("test")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String testJSON(){
-        Connector con = new Connector();
-        con.getConnection();
-        System.out.println("Arne");
-        return "Arne is bere goed";
-    }
 
     /**
      * Retrieves representation of an instance of rest.AITResource
+     *
      * @param content
      * @return an instance of java.lang.String
      */
     @POST
     @Path("authentication")
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public String authenticate(String content) {
+        JSONObject result = new JSONObject();
+        
         try {
             JSONObject data = (JSONObject) new JSONParser().parse(content);
-            String username = data.get("user.name").toString();
             String userdomain = data.get("user.domain").toString();
-            
-            //  TODO
-            //  check database in Azure to see if the values are present.
-            //  if so, send back the authentication key
-            
-        } catch(Exception e){
+            String MAC = data.get("mac.address").toString();
+            try {
+                Connector connector = new Connector();
+                Connection con = connector.getConnection();
+                PreparedStatement pst = con.prepareStatement("SELECT * FROM COMPANIES WHERE DOMAIN like ?");
+                pst.setString(1, "AUTOMOBILIA"); //  CHANGE TO USERDOMAIN
+                ResultSet rs = pst.executeQuery();
+
+                Boolean allow = false;
+                int id = -1;
+                while (rs.next()) {
+                    allow = rs.getBoolean("ALLOW");
+                    id = rs.getInt("ID");
+                }
+                pst.close();
+
+                if (allow) {
+                    pst = con.prepareStatement("SELECT AUTHKEY FROM COMPUTERS WHERE MAC like ? AND COMPANYID like ? AND ALLOW='True'");
+                    pst.setString(1, MAC); //  CHANGE TO MAC
+                    pst.setInt(2, id);
+                    rs = pst.executeQuery();
+
+                    String authKey = "";
+                    while (rs.next()) {
+                        authKey = rs.getString("AUTHKEY");
+                    }
+
+                    pst.close();
+
+                    if (authKey == null) {
+                        SecureRandom rnd = new SecureRandom();
+                        byte[] token = new byte[12];
+                        rnd.nextBytes(token);
+                        authKey = new BigInteger(1, token).toString(16);
+
+                        pst = con.prepareStatement("UPDATE computers SET authkey = ? WHERE MAC like ? and companyid like ?");
+                        pst.setString(1, authKey);
+                        pst.setString(2, MAC); //  CHANGE TO MAC
+                        pst.setInt(3, id);
+                        pst.executeUpdate();
+                        pst.close();
+                    }
+
+                    result.put("AuthKey", authKey);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return "OK";
+
+        return result.toJSONString();
     }
-    
+
     @POST
     @Path("data")
     @Consumes(MediaType.APPLICATION_JSON)
     public void sendData(String content) {
         System.out.println(content);
-        
+
         //  TODO :
         //  Create file from content and send it to Azure Data Lake
-        
         //Example to create JSON file"
-        
         /*File file = new File(domain + "-" + mac + "-" + username + "-" + ts);
         try {
             FileWriter fw = new FileWriter(file);
@@ -88,5 +130,5 @@ public class AITResource {
             e.printStackTrace();
         }*/
     }
-    
+
 }
