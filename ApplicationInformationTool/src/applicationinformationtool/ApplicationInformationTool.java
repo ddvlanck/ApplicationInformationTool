@@ -24,7 +24,9 @@ public class ApplicationInformationTool {
         UserData userdata = new UserData();
         SystemData sys = new SystemData();
         Authenticator auth = new Authenticator(userdata, sys);
-        auth.authenticate();
+        try {
+            auth.authenticate();
+        } catch(Exception e){}
     }
     
 }

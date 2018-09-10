@@ -11,11 +11,13 @@ import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
@@ -56,11 +58,12 @@ public class AITResource {
             JSONObject data = (JSONObject) new JSONParser().parse(content);
             String userdomain = data.get("user.domain").toString();
             String MAC = data.get("mac.address").toString();
+            
             try {
                 Connector connector = new Connector();
                 Connection con = connector.getConnection();
                 PreparedStatement pst = con.prepareStatement("SELECT * FROM COMPANIES WHERE DOMAIN like ?");
-                pst.setString(1, "AUTOMOBILIA"); //  CHANGE TO USERDOMAIN
+                pst.setString(1, "SAVACO"); //  CHANGE TO USERDOMAIN
                 ResultSet rs = pst.executeQuery();
 
                 Boolean allow = false;
@@ -81,6 +84,7 @@ public class AITResource {
                     while (rs.next()) {
                         authKey = rs.getString("AUTHKEY");
                     }
+                    System.out.println(authKey);
 
                     pst.close();
 
@@ -115,8 +119,7 @@ public class AITResource {
     @POST
     @Path("data")
     @Consumes(MediaType.APPLICATION_JSON)
-    public void sendData(String content) {
-        System.out.println(content);
+    public void sendData(@HeaderParam("AuthKey") String key, String content) {
 
         //  TODO :
         //  Create file from content and send it to Azure Data Lake
