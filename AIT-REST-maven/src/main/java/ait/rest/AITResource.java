@@ -10,17 +10,13 @@ import ait.azure.QueryCreator;
 import com.microsoft.azure.datalake.store.ADLStoreClient;
 import com.microsoft.azure.datalake.store.IfExists;
 import com.microsoft.azure.datalake.store.oauth2.AccessTokenProvider;
-import com.microsoft.azure.datalake.store.oauth2.AzureADToken;
 import com.microsoft.azure.datalake.store.oauth2.ClientCredsTokenProvider;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
@@ -80,7 +76,7 @@ public class AITResource {
             String MAC = data.get("mac.address").toString();
 
             try {
-                ResultSet rs = this.queryCreator.getCompanyInformation("SAVACO");
+                ResultSet rs = this.queryCreator.getCompanyInformation(userdomain);
 
                 Boolean allow = false;
                 int id = -1;
@@ -114,12 +110,12 @@ public class AITResource {
                 }
 
             } catch (SQLException e) {
-                Logger.getLogger(AITResource.class.getName()).log(Level.SEVERE, null, "[REST_API]: error when authenticating.");
+                Logger.getLogger(AITResource.class.getName()).log(Level.SEVERE, "[REST_API]: error when authenticating.");
 
             }
 
         } catch (ParseException e) {
-            Logger.getLogger(AITResource.class.getName()).log(Level.SEVERE, null, "[REST_API]: error when parsing the received content.");
+            Logger.getLogger(AITResource.class.getName()).log(Level.SEVERE, "[REST_API]: error when parsing the received content.");
 
         }
 
@@ -151,8 +147,7 @@ public class AITResource {
             }
 
         } catch (IOException | SQLException | ParseException e) {
-            Logger.getLogger(AITResource.class.getName()).log(Level.SEVERE, null, "[REST_API]: error sending data.");
-
+            Logger.getLogger(AITResource.class.getName()).log(Level.SEVERE, "[REST_API]: error sending data.");
         }
     }
 

@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  */
 public class QueryCreator {
 
-    private Connection connection;
+    private final Connection connection;
 
     public QueryCreator(Connector connector) {
         this.connection = connector.getConnection();
@@ -30,7 +30,7 @@ public class QueryCreator {
             PreparedStatement pst = this.connection.prepareStatement("SELECT * FROM COMPANIES WHERE DOMAIN like ?");
             pst.setString(1, userdomain);
             rs = pst.executeQuery();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             Logger.getLogger(QueryCreator.class.getName()).log(Level.SEVERE, null, "[QUERY_CREATOR]: error creating statement for company information.");
         }
         return rs;
@@ -69,7 +69,7 @@ public class QueryCreator {
             pst.setString(2, authKey);
             rs = pst.executeQuery();
         } catch(SQLException e){
-            Logger.getLogger(QueryCreator.class.getName()).log(Level.SEVERE, null, "[QUERY_CREATOR]: error igetting computer perissions.");
+            Logger.getLogger(QueryCreator.class.getName()).log(Level.SEVERE, null, "[QUERY_CREATOR]: error getting computer permissions.");
         }
         return rs;
     }
