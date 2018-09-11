@@ -5,14 +5,8 @@
  */
 package data;
 
-import information.ApplicationData;
 import information.SystemData;
 import information.UserData;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.Map;
 import org.json.simple.JSONObject;
 
@@ -31,15 +25,15 @@ public class DataCreator {
         Map<String, String> sysData = sys.getData();
 
         JSONObject result = new JSONObject();
-        for (Map.Entry<String, String> entry : userData.entrySet()) {
+        userData.entrySet().forEach((entry) -> {
             result.put(entry.getKey(), entry.getValue());
-        }
-        for (Map.Entry<String, String> entry : sysData.entrySet()) {
+        });
+
+        sysData.entrySet().forEach((entry) -> {
             result.put(entry.getKey(), entry.getValue());
-        }
-        
+        }); 
+
         //  TODO : appdata       
-        
 
         return result;
     }

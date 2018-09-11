@@ -7,12 +7,12 @@ package information;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
-import java.lang.management.OperatingSystemMXBean;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.HashMap;
 import java.util.Map;
-import org.json.simple.JSONObject;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -22,20 +22,18 @@ public class SystemData implements IData {
 
     @Override
     public Map<String, String> getData() {
-        Map<String, String> data = new HashMap<>();
+        Map<String, String> data = new HashMap<>();        
+        String userName = System.getProperty("user.name");
 
         Runtime rt = Runtime.getRuntime();
+        
         long diskSize = new File("/").getTotalSpace();
-        String userName = System.getProperty("user.name");
         long maxMemory = Runtime.getRuntime().maxMemory();
         long memorySize = ((com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean()).getTotalPhysicalMemorySize();
 
         com.sun.management.OperatingSystemMXBean os = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
-        long physicalMemorySize = os.getTotalPhysicalMemorySize();
+        long physicalMemorySize = os.getTotalPhysicalMemorySize();     
         
-        
-
-
         data.put("os.name", System.getProperty("os.name"));
         data.put("os.version", System.getProperty("os.version"));
         data.put("java.version", System.getProperty("java.version"));
@@ -61,7 +59,7 @@ public class SystemData implements IData {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(SystemData.class.getName()).log(Level.SEVERE, null, "[SYSTEM_DATA]: problem getting MAC address");
         }
         return address.toString();
     }

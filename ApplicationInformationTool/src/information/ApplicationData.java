@@ -10,7 +10,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import org.json.simple.JSONObject;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -29,13 +30,13 @@ public class ApplicationData implements IData {
         try {
             FileReader fr = new FileReader(file);
             BufferedReader br = new BufferedReader(fr);
-            
+
             String line;
-            while( (line = br.readLine()) != null){
+            while ((line = br.readLine()) != null) {
                 content.append(line);
             }
-        } catch(IOException e){
-            System.out.println("ERROR : cannot parse file '" + file + "'.");
+        } catch (IOException e) {
+            Logger.getLogger(ApplicationData.class.getName()).log(Level.SEVERE, null, "[APPLICATION_DATA]: could not parse file '" + file + "'.");
         }
         return content.toString();
     }
@@ -43,7 +44,7 @@ public class ApplicationData implements IData {
     @Override
     public Map<String, String> getData() {
         Map<String, String> data = new HashMap<>();
-        data.put("applcationdata", this.fileContent);
+        data.put("applicationdata", this.fileContent);
         return data;
     }
 

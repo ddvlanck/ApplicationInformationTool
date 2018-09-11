@@ -7,14 +7,10 @@ package information;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.json.simple.JSONObject;
 
 /**
  *
@@ -24,19 +20,18 @@ public class UserData implements IData {
 
     private static final String USERNAME = "user.name";
 
-    public UserData() {
-    }
+    public UserData() {}
 
     @Override
     public Map<String, String> getData() {
         Map<String, String> data = new HashMap<>();
 
-        if (!System.getProperty(USERNAME).equals("")) {
+        if (System.getProperty(USERNAME) != null) {
             data.put("user.name", System.getProperty(USERNAME));
         }
 
         String hostname = this.getUserDomain();
-        if (!hostname.equals("")) {
+        if (hostname != null) {
             data.put("user.domain", hostname);
         }
 
@@ -48,7 +43,7 @@ public class UserData implements IData {
         try {
             hostname = InetAddress.getLocalHost().getCanonicalHostName();
         } catch (UnknownHostException ex) {
-            Logger.getLogger(UserData.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UserData.class.getName()).log(Level.SEVERE, null, "[USER_DATA]: problem getting user domain");
         }
         return hostname;
     }
