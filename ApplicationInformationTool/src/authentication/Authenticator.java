@@ -27,8 +27,8 @@ import org.json.simple.parser.ParseException;
  */
 public class Authenticator {
 
-    private static final String authenticationURL = "http://localhost:8080/AIT-REST/ait/client/authentication";
-    private static final String dataURL = "http://localhost:8080/AIT-REST/ait/client/data";
+    private static final String authenticationURL = "http://localhost:8080/AIT-REST-maven/ait/client/authentication";
+    private static final String dataURL = "http://localhost:8080/AIT-REST-maven/ait/client/data";
     private final UserData user;
     private final SystemData sys;
 
@@ -69,8 +69,7 @@ public class Authenticator {
             //  if an authentication key was received from the server, send more data with the authentication key
             //  to new URL : 'http://localhost:8080/AIT-REST/ait/client/data
 
-            if (!this.AUTHENTICATION_KEY.equals("")) {
-
+            if (this.AUTHENTICATION_KEY != null) {
                 //  QUESTION : Send authentication key ?
                 DataCreator fc = new DataCreator();
                 JSONObject data = fc.createDataObject();
@@ -82,6 +81,7 @@ public class Authenticator {
                 conn.setRequestMethod("POST");
                 conn.setRequestProperty("Content-Type", "application/json");
                 conn.setRequestProperty("AuthKey", this.AUTHENTICATION_KEY);
+                conn.setRequestProperty("MAC", this.sys.getMACAddress());
 
                 os = conn.getOutputStream();
                 os.write(data.toJSONString().getBytes());
