@@ -19,6 +19,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Produces;
@@ -72,7 +74,7 @@ public class AITResource {
                 Connector connector = new Connector();
                 Connection con = connector.getConnection();
                 PreparedStatement pst = con.prepareStatement("SELECT * FROM COMPANIES WHERE DOMAIN like ?");
-                pst.setString(1, "SAVACO"); //  CHANGE TO USERDOMAIN
+                pst.setString(1, "AUTOMOBILIA"); //  CHANGE TO USERDOMAIN
                 ResultSet rs = pst.executeQuery();
 
                 Boolean allow = false;
@@ -128,6 +130,7 @@ public class AITResource {
     @Path("data")
     @Consumes(MediaType.APPLICATION_JSON)
     public void sendData(@HeaderParam("AuthKey") String key, @HeaderParam("MAC") String mac, String content) {
+        System.out.println("Iets");
         Connector connector = new Connector();
         Connection conn = connector.getConnection();
         try {
@@ -143,12 +146,14 @@ public class AITResource {
                 AccessTokenProvider provider = new ClientCredsTokenProvider("https://login.microsoftonline.com/863ddd56-6f86-4d42-a0c4-b52fbd6d288d/oauth2/token", "20fdfcd2-8440-4b5d-9270-1c6cdd7ae068", "PB62AG6w6uEQUPRAGYfvz5pVJ6TzNhc3jO8XDQ2R3Lo=");
                 
                 ADLStoreClient client = ADLStoreClient.createClient(accountFQDN, provider);
+                
+                //System.out.println(data.get("user.domain").toString() + "/" + data.get("mac.address") + "/" + data.get("user.name"));
                 client.createDirectory(data.get("user.domain").toString() + "/" + data.get("mac.address") + "/" + data.get("user.name"));
-                //String filename = data.get("user.domain").toString() + "/" + data.get("mac.address") + "/" + data.get("user.name") + "/" + new Timestamp(System.currentTimeMillis());
-                /*String filename = "Testje.txt";
+                
+                String filename = data.get("user.domain").toString() + "/" + data.get("mac.address") + "/" + data.get("user.name") + "/" + new SimpleDateFormat("yyyy-MM-dd-HH_mm_ss").format(new Date());
                 OutputStream stream = client.createFile(filename, IfExists.OVERWRITE);
                 stream.write(content.getBytes());
-                stream.flush();*/
+                stream.flush();
             }
 
         } catch (Exception e) {

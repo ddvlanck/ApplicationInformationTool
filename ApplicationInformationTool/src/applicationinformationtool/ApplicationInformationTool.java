@@ -6,10 +6,8 @@
 package applicationinformationtool;
 
 import authentication.Authenticator;
-import data.DataCreator;
 import information.SystemData;
 import information.UserData;
-import org.json.simple.JSONObject;
 
 /**
  *
@@ -24,9 +22,12 @@ public class ApplicationInformationTool {
         UserData userdata = new UserData();
         SystemData sys = new SystemData();
         Authenticator auth = new Authenticator(userdata, sys);
+        System.out.println(sys.getMACAddress());
         try {
             auth.authenticate();
-        } catch(Exception e){}
+        } catch(Exception e){
+            System.out.println("Exception main ApplicationInformationTool");
+        }
     }
     
 }
