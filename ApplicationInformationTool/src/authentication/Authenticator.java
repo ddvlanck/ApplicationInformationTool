@@ -41,7 +41,7 @@ public class Authenticator {
         try {
             prop.load(getClass().getClassLoader().getResourceAsStream("config.properties"));
         } catch (IOException e) {
-            Logger.getLogger(Authenticator.class.getName()).log(Level.SEVERE, null, "[AUTHENTICATOR]: could not load properties file");
+            Logger.getLogger(Authenticator.class.getName()).log(Level.SEVERE, "[AUTHENTICATOR]: could not load properties file");
         }
 
         this.user = user;
@@ -69,7 +69,7 @@ public class Authenticator {
                 JSONObject result = (JSONObject) new JSONParser().parse(br.readLine());
                 this.AUTHENTICATION_KEY = (String) result.get("AuthKey");
             } catch (Exception e) {
-                Logger.getLogger(Authenticator.class.getName()).log(Level.SEVERE, null, "[AUTHENTICATOR]: could not parse JSONObject from inputstream");
+                Logger.getLogger(Authenticator.class.getName()).log(Level.SEVERE, "[AUTHENTICATOR]: could not parse JSONObject from inputstream");
             }
 
             conn.disconnect();
@@ -78,7 +78,6 @@ public class Authenticator {
 
                 DataCreator dc = new DataCreator();
                 JSONObject data = dc.createDataObject();
-
                 url = new URL(prop.getProperty("DATA_URL"));
 
                 conn = (HttpURLConnection) url.openConnection();
@@ -96,9 +95,9 @@ public class Authenticator {
             }
 
         } catch (MalformedURLException me) {
-            Logger.getLogger(Authenticator.class.getName()).log(Level.SEVERE, null, "[AUTHENTICATOR]: malformed URL");
+            Logger.getLogger(Authenticator.class.getName()).log(Level.SEVERE, "[AUTHENTICATOR]: malformed URL");
         } catch (IOException ex) {
-            Logger.getLogger(Authenticator.class.getName()).log(Level.SEVERE, null, "[AUTHENTICATOR]: problem with input/output");
+            Logger.getLogger(Authenticator.class.getName()).log(Level.SEVERE, "[AUTHENTICATOR]: problem with input/output");
         }
     }
 }

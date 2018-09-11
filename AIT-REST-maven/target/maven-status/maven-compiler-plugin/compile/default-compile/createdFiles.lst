@@ -1,3 +1,4 @@
 ait\rest\AITResource.class
+ait\azure\QueryCreator.class
 ait\rest\ApplicationConfig.class
 ait\azure\Connector.class
