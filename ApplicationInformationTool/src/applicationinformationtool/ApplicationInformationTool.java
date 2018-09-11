@@ -23,6 +23,7 @@ public class ApplicationInformationTool {
         UserData userdata = new UserData();
         SystemData sys = new SystemData();
         Authenticator auth = new Authenticator(userdata, sys);
+        System.out.println(sys.getMACAddress());
         try {
             auth.authenticate();
         } catch(ParseException e){
