@@ -95,7 +95,7 @@ public class QueryCreator {
             pst.setString(1, macAddress);
             pst.setString(2, authKey);
             rs = pst.executeQuery();
-        } catch (SQLException e) {
+        } catch(SQLException e){
             Logger.getLogger(QueryCreator.class.getName()).log(Level.SEVERE, null, "[QUERY_CREATOR]: error getting computer permissions.");
         }
         return rs;

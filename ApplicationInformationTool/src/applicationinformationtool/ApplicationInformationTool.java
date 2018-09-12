@@ -26,7 +26,8 @@ public class ApplicationInformationTool {
         System.out.println("[ApplicationInformationTool] Starting tool...");
         
         // Developer phase:
-        String[] argumenten = { "C:\\Users\\dwigh\\Documents\\NetBeansProjects\\AIT\\ApplicationInformationTool\\ApplicationInformationTool\\src\\file.txt" };
+        //String[] argumenten = { "C:\\Users\\dwigh\\Documents\\NetBeansProjects\\AIT\\ApplicationInformationTool\\ApplicationInformationTool\\src\\file.txt" };
+        String[] argumenten = { "/Users/arneverhaeghe/Desktop/Savaco/AIT/ApplicationInformationTool/ApplicationInformationTool/src/file.txt" };
         
         if (argumenten.length > 0) {                                    //CHANGE argumenten TO args
             UserData user = new UserData();

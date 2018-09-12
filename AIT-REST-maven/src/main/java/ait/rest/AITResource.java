@@ -82,8 +82,8 @@ public class AITResource {
 
             try {
                 //  Get information about the company - if the company has an ALLOW='True', we process the computer itself
-                ResultSet rs = this.queryCreator.getCompanyInformation("SAVACO");
-
+                ResultSet rs = this.queryCreator.getCompanyInformation(userdomain);
+                
                 Boolean allow = false;
                 int id = -1;
                 while (rs.next()) {
@@ -133,7 +133,6 @@ public class AITResource {
                 }
 
             } catch (SQLException e) {
-                e.printStackTrace();
                 Logger.getLogger(AITResource.class.getName()).log(Level.SEVERE, "[REST_API]: error when authenticating.");
 
             }
