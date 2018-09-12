@@ -5,13 +5,10 @@
  */
 package authentication;
 
-import data.DataCreator;
 import information.SystemData;
 import information.UserData;
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -48,8 +45,10 @@ public class Authenticator {
         this.sys = sys;
     }
 
-    public void authenticate() throws ParseException {
+    public String authenticate() throws ParseException {
         try {
+            System.out.println("[Authenticator] Start authentication...");
+            
             JSONObject body = new JSONObject();
             body.put("user.domain", user.getUserDomain());
             body.put("mac.address", sys.getMACAddress());
@@ -68,36 +67,20 @@ public class Authenticator {
             try {
                 JSONObject result = (JSONObject) new JSONParser().parse(br.readLine());
                 this.AUTHENTICATION_KEY = (String) result.get("AuthKey");
-            } catch (Exception e) {
+            } catch (IOException | ParseException e) {
                 Logger.getLogger(Authenticator.class.getName()).log(Level.SEVERE, "[AUTHENTICATOR]: could not parse JSONObject from inputstream");
             }
 
             conn.disconnect();
-
-            if (this.AUTHENTICATION_KEY != null) {
-
-                DataCreator dc = new DataCreator();
-                JSONObject data = dc.createDataObject();
-                url = new URL(prop.getProperty("DATA_URL"));
-
-                conn = (HttpURLConnection) url.openConnection();
-                conn.setDoOutput(true);
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Content-Type", "application/json");
-                conn.setRequestProperty("AuthKey", this.AUTHENTICATION_KEY);
-                conn.setRequestProperty("MAC", this.sys.getMACAddress());
-
-                os = conn.getOutputStream();
-                os.write(data.toJSONString().getBytes());
-                br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-
-                conn.disconnect();
-            }
-
+            System.out.println("[Authenticator] Authenticated with authKey: " + this.AUTHENTICATION_KEY);
+            return this.AUTHENTICATION_KEY;
+            
         } catch (MalformedURLException me) {
             Logger.getLogger(Authenticator.class.getName()).log(Level.SEVERE, "[AUTHENTICATOR]: malformed URL");
         } catch (IOException ex) {
             Logger.getLogger(Authenticator.class.getName()).log(Level.SEVERE, "[AUTHENTICATOR]: problem with input/output");
         }
+        System.out.println("[Authenticator] Permission denied.");
+        return null;
     }
 }

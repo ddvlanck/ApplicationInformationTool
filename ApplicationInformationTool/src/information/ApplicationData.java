@@ -36,7 +36,8 @@ public class ApplicationData implements IData {
                 content.append(line);
             }
         } catch (IOException e) {
-            Logger.getLogger(ApplicationData.class.getName()).log(Level.SEVERE, null, "[APPLICATION_DATA]: could not parse file '" + file + "'.");
+            //Logger.getLogger(ApplicationData.class.getName()).log(Level.SEVERE, null, "[APPLICATION_DATA]: could not parse file '" + file + "'.");
+            System.out.println("[APPLICATION_DATA]: could not parse file '" + file + "'.");
         }
         return content.toString();
     }

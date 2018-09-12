@@ -10,17 +10,15 @@ import ait.azure.QueryCreator;
 import com.microsoft.azure.datalake.store.ADLStoreClient;
 import com.microsoft.azure.datalake.store.IfExists;
 import com.microsoft.azure.datalake.store.oauth2.AccessTokenProvider;
-import com.microsoft.azure.datalake.store.oauth2.AzureADToken;
 import com.microsoft.azure.datalake.store.oauth2.ClientCredsTokenProvider;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
@@ -49,6 +47,7 @@ public class AITResource {
 
     private QueryCreator queryCreator;
     private Connector connector;
+    private ADLStoreClient client;
 
     @Context
     private UriInfo context;
@@ -59,6 +58,8 @@ public class AITResource {
     public AITResource() {
         this.connector = new Connector();
         this.queryCreator = new QueryCreator(connector);
+        AccessTokenProvider provider = new ClientCredsTokenProvider("https://login.microsoftonline.com/863ddd56-6f86-4d42-a0c4-b52fbd6d288d/oauth2/token", "20fdfcd2-8440-4b5d-9270-1c6cdd7ae068", "PB62AG6w6uEQUPRAGYfvz5pVJ6TzNhc3jO8XDQ2R3Lo=");
+        this.client = ADLStoreClient.createClient(accountFQDN, provider);
     }
 
     /**
@@ -80,6 +81,7 @@ public class AITResource {
             String MAC = data.get("mac.address").toString();
 
             try {
+                //  Get information about the company - if the company has an ALLOW='True', we process the computer itself
                 ResultSet rs = this.queryCreator.getCompanyInformation("SAVACO");
 
                 Boolean allow = false;
@@ -91,35 +93,53 @@ public class AITResource {
 
                 rs.close();
 
+                //  Company is allowed - process the computer itself
                 if (allow) {
-                    rs = this.queryCreator.getAuthenticationKey(MAC, id);
+                    //rs = this.queryCreator.getComputerInformation(MAC, id);
+                    rs = this.queryCreator.getComputerInformation("10-00-00-00-00-00", 1);
+                    
 
-                    String authKey = null;
-                    while (rs.next()) {
-                        authKey = rs.getString("AUTHKEY");
+                    //  The computer exists - extract the necessary information
+                    if (rs.isBeforeFirst()) {
+                        String authKey = null;
+                        Boolean allowPc = false;
+                        while (rs.next()) {
+                            authKey = rs.getString("AUTHKEY");
+                            allowPc = rs.getBoolean("ALLOW");
+                        }
+
+                        if (allowPc && authKey == null) {
+                            //  Generate authKey
+                            authKey = this.generateAuthenticationKey();
+                            this.queryCreator.insertAuthenticationKey(authKey, MAC, id);
+                            result.put("AuthKey", authKey);
+                        } else if (allowPc && authKey != null) {
+                            result.put("AuthKey", authKey);
+                        } else {
+                            //  Send basic data to unauthorized file
+                            System.out.println("SENDING DATA TO FILE");
+                            this.sendBasicData(data);
+                            result.put("AuthKey", null);
+                        }
+
+                    } else {    //  Computer doesn't exist - add it
+                        String authKey = this.generateAuthenticationKey();
+                        this.queryCreator.addComputer(MAC, id, authKey);
+                        result.put("AuthKey", authKey);
                     }
-
-                    rs.close();
-
-                    if (authKey == null) {
-                        SecureRandom rnd = new SecureRandom();
-                        byte[] token = new byte[12];
-                        rnd.nextBytes(token);
-                        authKey = new BigInteger(1, token).toString(16);
-
-                        this.queryCreator.insertAuthenticationKey(authKey, MAC, id);
-                    }
-
-                    result.put("AuthKey", authKey);
+                } else {
+                    System.out.println("DATA SEND");
+                    this.sendBasicData(data);
                 }
 
             } catch (SQLException e) {
-                Logger.getLogger(AITResource.class.getName()).log(Level.SEVERE, null, "[REST_API]: error when authenticating.");
+                e.printStackTrace();
+                Logger.getLogger(AITResource.class.getName()).log(Level.SEVERE, "[REST_API]: error when authenticating.");
 
             }
 
         } catch (ParseException e) {
-            Logger.getLogger(AITResource.class.getName()).log(Level.SEVERE, null, "[REST_API]: error when parsing the received content.");
+            Logger.getLogger(AITResource.class.getName()).log(Level.SEVERE, "[REST_API]: error when parsing the received content.");
 
         }
 
@@ -139,21 +159,39 @@ public class AITResource {
                 if (allow) {
                     JSONObject data = (JSONObject) new JSONParser().parse(content);
 
-                    AccessTokenProvider provider = new ClientCredsTokenProvider("https://login.microsoftonline.com/863ddd56-6f86-4d42-a0c4-b52fbd6d288d/oauth2/token", "20fdfcd2-8440-4b5d-9270-1c6cdd7ae068", "PB62AG6w6uEQUPRAGYfvz5pVJ6TzNhc3jO8XDQ2R3Lo=");
-                    ADLStoreClient client = ADLStoreClient.createClient(accountFQDN, provider);
-                    client.createDirectory(data.get("user.domain").toString() + "/" + data.get("mac.address") + "/" + data.get("user.name"));
+                    this.client.createDirectory(data.get("user.domain").toString() + "/" + data.get("mac.address") + "/" + data.get("user.name"));
 
                     String filename = data.get("user.domain").toString() + "/" + data.get("mac.address") + "/" + data.get("user.name") + "/" + new SimpleDateFormat("yyyy-MM-dd-HH_mm_ss").format(new Date());
-                    OutputStream stream = client.createFile(filename, IfExists.OVERWRITE);
+                    OutputStream stream = this.client.createFile(filename, IfExists.OVERWRITE);
                     stream.write(content.getBytes());
                     stream.flush();
                 }
             }
 
         } catch (IOException | SQLException | ParseException e) {
-            Logger.getLogger(AITResource.class.getName()).log(Level.SEVERE, null, "[REST_API]: error sending data.");
-
+            Logger.getLogger(AITResource.class.getName()).log(Level.SEVERE, "[REST_API]: error sending data.");
         }
+    }
+
+    private void sendBasicData(JSONObject data) {
+        try {
+            OutputStream stream = this.client.getAppendStream("unauthorized_client_information.log");
+            data.put("Timestamp", new SimpleDateFormat("yyyy-MM-dd-HH_mm_ss").format(new Date()));
+            byte[] buffer = data.toJSONString().getBytes();
+            stream.write(buffer);
+            stream.write(new String("\n").getBytes());
+            stream.close();
+        } catch (IOException e) {
+            //e.printStackTrace();
+            Logger.getLogger(AITResource.class.getName()).log(Level.SEVERE, "[REST_API]: error appending data to the 'unauthorized client information' file.");
+        }
+    }
+
+    private String generateAuthenticationKey() {
+        SecureRandom rnd = new SecureRandom();
+        byte[] token = new byte[12];
+        rnd.nextBytes(token);
+        return new BigInteger(1, token).toString(16);
     }
 
 }

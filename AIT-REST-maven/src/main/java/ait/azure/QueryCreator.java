@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  */
 public class QueryCreator {
 
-    private Connection connection;
+    private final Connection connection;
 
     public QueryCreator(Connector connector) {
         this.connection = connector.getConnection();
@@ -30,13 +30,40 @@ public class QueryCreator {
             PreparedStatement pst = this.connection.prepareStatement("SELECT * FROM COMPANIES WHERE DOMAIN like ?");
             pst.setString(1, userdomain);
             rs = pst.executeQuery();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             Logger.getLogger(QueryCreator.class.getName()).log(Level.SEVERE, null, "[QUERY_CREATOR]: error creating statement for company information.");
         }
         return rs;
     }
 
-    public ResultSet getAuthenticationKey(String macAddress, int companyId) {
+    public ResultSet getComputerInformation(String macAddress, int companyId) {
+        ResultSet rs = null;
+        try {
+            PreparedStatement pst = this.connection.prepareStatement("SELECT * FROM COMPUTERS WHERE MAC like ? AND COMPANYID like ?");
+            pst.setString(1, macAddress);
+            pst.setInt(2, companyId);
+            rs = pst.executeQuery();
+        } catch(SQLException e){
+            Logger.getLogger(QueryCreator.class.getName()).log(Level.SEVERE, null, "[QUERY_CREATOR]: error getting information about the computer.");
+        }
+        return rs;
+    }
+    
+    public void addComputer(String macAddress, int companyId, String authKey){
+        try {
+            PreparedStatement pst = this.connection.prepareStatement("INSERT INTO COMPUTERS VALUES (?, ?, ?, ?)");
+            pst.setString(1, macAddress);
+            pst.setInt(2, companyId);
+            pst.setBoolean(3, true);
+            pst.setString(4, authKey);
+            pst.executeUpdate();
+            
+        } catch(SQLException e){
+            Logger.getLogger(QueryCreator.class.getName()).log(Level.SEVERE, null, "[QUERY_CREATOR]: error inserting the computer into the database.");
+        }
+    }
+
+    /*public ResultSet getAuthenticationKey(String macAddress, int companyId) {
         ResultSet rs = null;
         try {
             PreparedStatement pst = this.connection.prepareStatement("SELECT AUTHKEY FROM COMPUTERS WHERE MAC like ? AND COMPANYID like ? AND ALLOW='True'");
@@ -47,7 +74,7 @@ public class QueryCreator {
             Logger.getLogger(QueryCreator.class.getName()).log(Level.SEVERE, null, "[QUERY_CREATOR]: error getting authentication key.");
         }
         return rs;
-    }
+    }*/
 
     public void insertAuthenticationKey(String authKey, String macAddress, int companyId) {
         try {
@@ -60,16 +87,16 @@ public class QueryCreator {
             Logger.getLogger(QueryCreator.class.getName()).log(Level.SEVERE, null, "[QUERY_CREATOR]: error inserting authentication key.");
         }
     }
-    
-    public ResultSet getComputerPermissions(String macAddress, String authKey){
+
+    public ResultSet getComputerPermissions(String macAddress, String authKey) {
         ResultSet rs = null;
         try {
             PreparedStatement pst = this.connection.prepareStatement("SELECT ALLOW FROM COMPUTERS WHERE MAC = ? AND AUTHKEY = ?");
             pst.setString(1, macAddress);
             pst.setString(2, authKey);
             rs = pst.executeQuery();
-        } catch(SQLException e){
-            Logger.getLogger(QueryCreator.class.getName()).log(Level.SEVERE, null, "[QUERY_CREATOR]: error igetting computer perissions.");
+        } catch (SQLException e) {
+            Logger.getLogger(QueryCreator.class.getName()).log(Level.SEVERE, null, "[QUERY_CREATOR]: error getting computer permissions.");
         }
         return rs;
     }
