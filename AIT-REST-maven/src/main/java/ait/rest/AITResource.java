@@ -27,6 +27,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -170,6 +171,16 @@ public class AITResource {
         } catch (IOException | SQLException | ParseException e) {
             Logger.getLogger(AITResource.class.getName()).log(Level.SEVERE, "[REST_API]: error sending data.");
         }
+    }
+    
+    @GET
+    @Path("update")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String sendJson(){
+        JSONObject result = new JSONObject();
+        result.put("Version", "2.0");
+        result.put("URL", "http://example.org/2.0");
+        return result.toJSONString();
     }
 
     private void sendBasicData(JSONObject data) {

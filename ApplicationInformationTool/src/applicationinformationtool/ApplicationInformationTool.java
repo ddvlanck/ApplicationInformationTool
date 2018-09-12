@@ -23,7 +23,7 @@ public class ApplicationInformationTool {
      */
     public static void main(String[] args) {
         
-        System.out.println("[ApplicationInformationTool] Starting tool...");
+        System.out.println("[ApplicationInformationTool] Starting tool v2...");
         
         // Developer phase:
         //String[] argumenten = { "C:\\Users\\dwigh\\Documents\\NetBeansProjects\\AIT\\ApplicationInformationTool\\ApplicationInformationTool\\src\\file.txt" };
@@ -47,6 +47,7 @@ public class ApplicationInformationTool {
                     System.out.println("[ApplicationInformationTool] Done.");
                     
                 }
+                System.exit(0);
             } catch (ParseException e) {
                 System.out.println("Exception main ApplicationInformationTool");
             }
