@@ -1,3 +1,5 @@
 .idea
 nbproject
 /AIT-REST/dist/
+/SoftwareUpdateTool/build/
+/SoftwareUpdateTool/dist/
