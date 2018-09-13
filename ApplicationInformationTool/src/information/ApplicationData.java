@@ -8,6 +8,8 @@ package information;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -25,19 +27,19 @@ public class ApplicationData implements IData {
         this.fileContent = this.parseFile(file);
     }
 
-    private String parseFile(String file) {
+    private String parseFile(String filename) {
+        InputStream input = this.getClass().getClassLoader().getResourceAsStream(filename);
+        BufferedReader br = new BufferedReader(new InputStreamReader(input));
         StringBuilder content = new StringBuilder();
+        
         try {
-            FileReader fr = new FileReader(file);
-            BufferedReader br = new BufferedReader(fr);
-
             String line;
             while ((line = br.readLine()) != null) {
                 content.append(line);
             }
         } catch (IOException e) {
             //Logger.getLogger(ApplicationData.class.getName()).log(Level.SEVERE, null, "[APPLICATION_DATA]: could not parse file '" + file + "'.");
-            System.out.println("[APPLICATION_DATA]: could not parse file '" + file + "'.");
+            System.out.println("[APPLICATION_DATA]: could not parse file '" + filename + "'.");
         }
         return content.toString();
     }

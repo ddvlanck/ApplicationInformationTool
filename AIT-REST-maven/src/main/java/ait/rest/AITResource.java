@@ -11,8 +11,13 @@ import com.microsoft.azure.datalake.store.ADLStoreClient;
 import com.microsoft.azure.datalake.store.IfExists;
 import com.microsoft.azure.datalake.store.oauth2.AccessTokenProvider;
 import com.microsoft.azure.datalake.store.oauth2.ClientCredsTokenProvider;
+import static com.sun.org.apache.xerces.internal.xinclude.XIncludeHandler.BUFFER_SIZE;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -32,6 +37,7 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -84,7 +90,7 @@ public class AITResource {
             try {
                 //  Get information about the company - if the company has an ALLOW='True', we process the computer itself
                 ResultSet rs = this.queryCreator.getCompanyInformation(userdomain);
-                
+
                 Boolean allow = false;
                 int id = -1;
                 while (rs.next()) {
@@ -98,7 +104,6 @@ public class AITResource {
                 if (allow) {
                     //rs = this.queryCreator.getComputerInformation(MAC, id);
                     rs = this.queryCreator.getComputerInformation("10-00-00-00-00-00", 1);
-                    
 
                     //  The computer exists - extract the necessary information
                     if (rs.isBeforeFirst()) {
@@ -172,15 +177,53 @@ public class AITResource {
             Logger.getLogger(AITResource.class.getName()).log(Level.SEVERE, "[REST_API]: error sending data.");
         }
     }
-    
+
     @GET
     @Path("update")
     @Produces(MediaType.APPLICATION_JSON)
-    public String sendJson(){
-        JSONObject result = new JSONObject();
-        result.put("Version", "2.0");
-        result.put("URL", "http://example.org/2.0");
-        return result.toJSONString();
+    public String sendJson() {
+        //  Here we need to access Azure Data Lake > ApplicationTool > version
+        //  In that file, the latest version number can be found
+        JSONObject versie = new JSONObject();
+        try {
+            InputStream in = this.client.getReadStream("ApplicationTool/version");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            String version = reader.readLine();
+            versie.put("version", version);
+        } catch(IOException e){
+            Logger.getLogger(AITResource.class.getName()).log(Level.SEVERE, "[REST_API]: could not retrieve version from Azure Data Lake");
+        }
+        return versie.toJSONString();
+    }
+    
+    @GET
+    @Path("downloadUpdate")
+    @Produces(MediaType.MULTIPART_FORM_DATA)
+    public InputStream sendVersion(){
+        InputStream input = null;
+        try {
+            input = this.client.getReadStream("ApplicationTool/ApplicationInformationTool.jar");
+        } catch(IOException e){
+            e.printStackTrace();
+        }
+        return input;
+        
+        /*JSONObject version = new JSONObject();
+        File file = new File("ApplicationInformationTool.jar");
+        try {
+            InputStream in = this.client.getReadStream("ApplicationTool/ApplicationInformationTool.jar");
+            FileOutputStream output = new FileOutputStream(file);
+            int bytesRead = -1;
+            byte[] buffer = new byte[Integer.parseInt(BUFFER_SIZE)];
+            while( (bytesRead = in.read(buffer)) != -1){
+                output.write(buffer, 0, bytesRead);
+            }
+            in.close();
+            output.close();
+        } catch(IOException e){
+            Logger.getLogger(AITResource.class.getName()).log(Level.SEVERE, "[REST_API]: could not retrieve version from Azure Data Lake");
+        }
+        return Response.ok(file, MediaType.MULTIPART_FORM_DATA).header("Content-Disposition", "attachment; file=\"" + file.getName() + "\"").build();*/
     }
 
     private void sendBasicData(JSONObject data) {

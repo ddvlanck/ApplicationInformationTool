@@ -22,35 +22,35 @@ public class ApplicationInformationTool {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        
-        System.out.println("[ApplicationInformationTool] Starting tool v2...");
-        
-        // Developer phase:
-        //String[] argumenten = { "C:\\Users\\dwigh\\Documents\\NetBeansProjects\\AIT\\ApplicationInformationTool\\ApplicationInformationTool\\src\\file.txt" };
-        String[] argumenten = { "/Users/arneverhaeghe/Desktop/Savaco/AIT/ApplicationInformationTool/ApplicationInformationTool/src/file.txt" };
-        
-        if (argumenten.length > 0) {                                    //CHANGE argumenten TO args
-            UserData user = new UserData();
-            SystemData sys = new SystemData();
-            ApplicationData app = new ApplicationData(argumenten[0]);   //CHANGE argumenten TO args
-            Authenticator auth = new Authenticator(user, sys);
-            try {
-                String authKey = auth.authenticate();
 
-                if (authKey != null) {
-                    
-                    System.out.println("[ApplicationInformationTool] Authentication Succesful.");
-                    
-                    DataCreator dc = new DataCreator(user, sys, app);
-                    dc.postData(authKey);
-                    
-                    System.out.println("[ApplicationInformationTool] Done.");
-                    
-                }
-                System.exit(0);
-            } catch (ParseException e) {
-                System.out.println("Exception main ApplicationInformationTool");
+        System.out.println("[ApplicationInformationTool] Starting tool");
+
+        // Production phase:
+        String filename = args[0];
+        
+        //Developher phase
+        //String filename = "file.txt";
+        
+        UserData user = new UserData();
+        SystemData sys = new SystemData();
+        ApplicationData app = new ApplicationData(filename);
+        Authenticator auth = new Authenticator(user, sys);
+        try {
+            String authKey = auth.authenticate();
+
+            if (authKey != null) {
+
+                System.out.println("[ApplicationInformationTool] Authentication Succesful.");
+
+                DataCreator dc = new DataCreator(user, sys, app);
+                dc.postData(authKey);
+
+                System.out.println("[ApplicationInformationTool] Done.");
+
             }
+            System.exit(0);
+        } catch (ParseException e) {
+            System.out.println("Exception main ApplicationInformationTool");
         }
 
     }

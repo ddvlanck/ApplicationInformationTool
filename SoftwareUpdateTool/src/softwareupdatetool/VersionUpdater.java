@@ -5,8 +5,10 @@
  */
 package softwareupdatetool;
 
+import static com.sun.org.apache.xerces.internal.xinclude.XIncludeHandler.BUFFER_SIZE;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,36 +34,37 @@ import org.json.simple.parser.ParseException;
 public final class VersionUpdater {
 
     private String version;
+    private JSONObject appdata;
 
-    public VersionUpdater() {
-        this.getSoftwareVersion();
+    public VersionUpdater(String filename) {
+        this.appdata = this.parseApplicationData(filename);
+        this.version = this.getCurrentSoftwareVersion();
     }
 
-    //Reads the software version from the file
-    public void getSoftwareVersion() {
-        InputStream input = this.getClass().getClassLoader().getResourceAsStream("version");
+    private JSONObject parseApplicationData(String filename) {
+        InputStream input = this.getClass().getClassLoader().getResourceAsStream(filename);
         BufferedReader br = new BufferedReader(new InputStreamReader(input));
+        JSONObject result = new JSONObject();
         try {
-            this.version = br.readLine();
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+            result = (JSONObject) new JSONParser().parse(sb.toString());
         } catch (IOException e) {
-            Logger.getLogger(VersionUpdater.class.getName()).log(Level.SEVERE, "[VersionUpdate]: problems with reading file.");
+            Logger.getLogger(VersionUpdater.class.getName()).log(Level.SEVERE, "[VersionUpdate]: problems reading application data file.");
+        } catch (ParseException e) {
+            Logger.getLogger(VersionUpdater.class.getName()).log(Level.SEVERE, "[VersionUpdate]: problem parsing data to JSON.");
         }
+        return result;
     }
 
-    public void setSoftwareVersion(String version) {
-        File fnew = new File(this.getClass().getResource("/version").getPath());
-        FileWriter f2;
-
-        try {
-            f2 = new FileWriter(fnew, false);
-            f2.write(version);
-            f2.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private String getCurrentSoftwareVersion() {
+        return this.appdata.get("version").toString();
     }
 
-    public JSONObject getLatestVersion() {
+    public String getLatestSoftwareVersion() {
         JSONObject result = null;
         try {
             URL url = new URL("http://localhost:8080/AIT-REST-maven/ait/client/update");
@@ -80,40 +83,66 @@ public final class VersionUpdater {
             Logger.getLogger(VersionUpdater.class.getName()).log(Level.SEVERE, "[VersionUpdate]: error opening connection.");
         }
 
-        return result;
+        return result.get("version").toString();
     }
 
-    public void downloadNewVersion(String downloadURL) {
+    public void downloadNewVersion() {
         //  Download the new version
-
-        //  DEVELOPING PHASE
-        //  There are 2 jar files, and we copy the newest the the folder of the other one and remove the old version
-        //  In this case, the downloadURL is the name of the newest jar file
         try {
-            URL url = this.getClass().getResource("/newVersion/ApplicationInformationTool_v2.jar");
-            URL dir = this.getClass().getResource("/currentVersion");
-            System.out.println("Url: " + url.getPath() + " \ndir: " + dir.getPath());
+            URL url = new URL("http://localhost:8080/AIT-REST-maven/ait/client/downloadUpdate");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Accept", "multipart/form-data");
+            conn.connect();
 
-            //remove old version
-            URL old = this.getClass().getResource("/currentVersion/ApplicationInformationTool.jar");
-            if (old.getPath() != null) {
-                System.out.println("old: " + old.getPath());
-                Files.deleteIfExists(Paths.get(old.getPath()));
+            File file = new File("src/applicationinformationtool/ApplicationInformationTool.jar");
+            FileOutputStream output = new FileOutputStream(file);
+            InputStream in = conn.getInputStream();
+            int bytesRead = -1;
+            byte[] buffer = new byte[1024];
+            while ((bytesRead = in.read(buffer)) != -1) {
+                output.write(buffer, 0, bytesRead);
             }
+            in.close();
+            output.close();
 
-            //copy new version to currentVersion directory
-            Path temp = Files.copy(Paths.get(url.getPath()), Paths.get(dir.getPath() + "/ApplicationInformationTool.jar"));
-
-            if (temp != null) {
-                System.out.println("File moved successfully");
-                this.setSoftwareVersion("2.0");
-            } else {
-                System.out.println("Failed to move the file");
-            }
-
-        } catch (IOException ex) {
-            Logger.getLogger(VersionUpdater.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+    }
+
+    public File updateVersionFile() {
+        this.appdata.put("version", this.getLatestSoftwareVersion());
+        File file = new File("modifiedappdata.txt");
+        try {
+            FileOutputStream output = new FileOutputStream(file);
+            output.write(this.appdata.toJSONString().getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
+
+    public void deleteOldestVersion() {
+        File folder = new File("src/applicationinformationtool");
+        File[] files = folder.listFiles();
+        
+        int fileCount = 0;
+        File oldest = null;
+        for(File file : files){
+            if(file.isFile()){
+                fileCount++;
+                if(oldest == null || file.lastModified() < oldest.lastModified()){
+                    oldest = file;
+                }
+            }            
+        }
+        if(fileCount > 1 && oldest != null){
+            oldest.delete();
+        }
+        
     }
 
     public String getVersion() {
