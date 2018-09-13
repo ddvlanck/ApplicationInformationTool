@@ -26,10 +26,10 @@ public class ApplicationInformationTool {
         System.out.println("[ApplicationInformationTool] Starting tool");
 
         // Production phase:
-        String filename = args[0];
+        //String filename = args[0];
         
         //Developher phase
-        //String filename = "file.txt";
+        String filename = "file.txt";
         
         UserData user = new UserData();
         SystemData sys = new SystemData();

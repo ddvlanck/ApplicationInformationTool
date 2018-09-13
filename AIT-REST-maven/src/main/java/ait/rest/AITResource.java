@@ -102,8 +102,8 @@ public class AITResource {
 
                 //  Company is allowed - process the computer itself
                 if (allow) {
-                    //rs = this.queryCreator.getComputerInformation(MAC, id);
-                    rs = this.queryCreator.getComputerInformation("10-00-00-00-00-00", 1);
+                    rs = this.queryCreator.getComputerInformation(MAC, id);
+                    //rs = this.queryCreator.getComputerInformation("10-00-00-00-00-00", 1);
 
                     //  The computer exists - extract the necessary information
                     if (rs.isBeforeFirst()) {

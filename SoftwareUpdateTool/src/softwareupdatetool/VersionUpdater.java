@@ -95,7 +95,7 @@ public final class VersionUpdater {
             conn.setRequestProperty("Accept", "multipart/form-data");
             conn.connect();
 
-            File file = new File("src/applicationinformationtool/ApplicationInformationTool.jar");
+            File file = new File("applicationinformationtool/ApplicationInformationTool.jar");
             FileOutputStream output = new FileOutputStream(file);
             InputStream in = conn.getInputStream();
             int bytesRead = -1;
@@ -126,7 +126,7 @@ public final class VersionUpdater {
     }
 
     public void deleteOldestVersion() {
-        File folder = new File("src/applicationinformationtool");
+        File folder = new File("applicationinformationtool");
         File[] files = folder.listFiles();
         
         int fileCount = 0;
