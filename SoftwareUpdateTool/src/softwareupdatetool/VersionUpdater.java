@@ -5,22 +5,15 @@
  */
 package softwareupdatetool;
 
-import static com.sun.org.apache.xerces.internal.xinclude.XIncludeHandler.BUFFER_SIZE;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.simple.JSONObject;
@@ -107,9 +100,9 @@ public final class VersionUpdater {
             output.close();
 
         } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(VersionUpdater.class.getName()).log(Level.SEVERE, "[VersionUpdater]: download url is not correct.");
+        } catch (IOException e) {
+            Logger.getLogger(VersionUpdater.class.getName()).log(Level.SEVERE, "[VersionUpdater]: problem while downloading the newest software version.");
         }
     }
 
@@ -120,7 +113,7 @@ public final class VersionUpdater {
             FileOutputStream output = new FileOutputStream(file);
             output.write(this.appdata.toJSONString().getBytes());
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.getLogger(VersionUpdater.class.getName()).log(Level.SEVERE, "[VersionUpdater]: problem creating the modified app data file.");
         }
         return file;
     }

@@ -35,7 +35,7 @@ public class SoftwareUpdateTool {
             System.out.println("File " + file.getName() + " is correct.");
         } catch (Exception e) {
             System.out.println("File " + filename + " does not exist.");
-            e.printStackTrace();
+            Logger.getLogger(VersionUpdater.class.getName()).log(Level.SEVERE, "[SoftwareUpdateTool]: error, argument file does not exist.");
         }
 
         VersionUpdater vu = new VersionUpdater(filename);
@@ -46,7 +46,7 @@ public class SoftwareUpdateTool {
             //first time downloading
             dir.mkdir();
             vu.downloadNewVersion();
-            
+
             //add json parsing dependency
             File lib = new File("lib");
             File json = new File("lib/json-simple-1.1.1.jar");
@@ -54,10 +54,9 @@ public class SoftwareUpdateTool {
                 Files.copy(lib.toPath(), Paths.get(dir.toPath() + "/lib"));
                 Files.copy(json.toPath(), Paths.get(dir.toPath() + "/lib/json-simple-1.1.1.jar"));
             } catch (IOException e) {
-                System.out.println("ERROR: Could not copy library.");
-                e.printStackTrace();
+                Logger.getLogger(VersionUpdater.class.getName()).log(Level.SEVERE, "[SoftwareUpdateTool]: could not copy library.");
             }
-            
+
         } else {
             //update
             String latestVersion = vu.getLatestSoftwareVersion();
@@ -79,7 +78,6 @@ public class SoftwareUpdateTool {
         File program = new File("applicationinformationtool").listFiles()[0];
 
         try {
-            System.out.println(appData.getCanonicalPath());
             Process ps = Runtime.getRuntime().exec(new String[]{"java", "-jar", program.getAbsolutePath(), "file.txt"});
 
             InputStream is = ps.getInputStream();
@@ -88,17 +86,16 @@ public class SoftwareUpdateTool {
             while ((line = br.readLine()) != null) {
                 System.out.println(line);
             }
-            
+
             InputStream er = ps.getErrorStream();
             BufferedReader berr = new BufferedReader(new InputStreamReader(er));
             String errline;
             while ((errline = berr.readLine()) != null) {
-                System.out.println("[ERRORSSZE] " + errline);
+            Logger.getLogger(VersionUpdater.class.getName()).log(Level.SEVERE, "[SoftwareUpdateTool]: " + errline);
             }
 
-            //Runtime.getRuntime().exec("java -jar " + program.getAbsolutePath() + " " + appData.getName());
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            Logger.getLogger(VersionUpdater.class.getName()).log(Level.SEVERE, "[SoftwareUpdateTool]: problem while starting the application information tool.");
         }
     }
 
